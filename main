@@ -68,7 +68,7 @@ playerSeeButton.Parent = frame
 local canSeePlayers = false
 updateButton(playerSeeButton, canSeePlayers)
 
--- Funcția care face jucătorii vizibili/invizibili și îi colorează verde prin orice perete
+-- Funcția care face jucătorii vizibili/invizibili și îi colorează verde neon prin orice perete
 playerSeeButton.MouseButton1Click:Connect(function()
     canSeePlayers = not canSeePlayers  -- Inversăm starea
     updateButton(playerSeeButton, canSeePlayers)
@@ -81,7 +81,7 @@ playerSeeButton.MouseButton1Click:Connect(function()
                     if part:IsA("BasePart") or part:IsA("MeshPart") then
                         part.Transparency = canSeePlayers and 0 or 1  -- Fă-l vizibil/invizibil
                         if canSeePlayers then
-                            part.Color = Color3.fromRGB(0, 255, 0)  -- Colorează verde
+                            part.Color = Color3.fromRGB(0, 255, 0)  -- Verde neon
                         end
                     end
                 end
@@ -89,10 +89,10 @@ playerSeeButton.MouseButton1Click:Connect(function()
         end
     end
 
-    -- Dacă este On, facem obiectele dintre jucători și tine transparente
+    -- Dacă este On, facem obiectele dintre jucători și tine aproape complet transparente
     for _, object in ipairs(game.Workspace:GetDescendants()) do
         if object:IsA("BasePart") and not object:IsA("Player") then
-            object.LocalTransparencyModifier = canSeePlayers and 0.5 or 0  -- Obiectele devin semi-transparente
+            object.LocalTransparencyModifier = canSeePlayers and 0.05 or 0  -- Obiectele devin aproape complet transparente
         end
     end
 end)
