@@ -1,55 +1,88 @@
--- Creăm un GUI pentru eroare
+-- Creăm GUI-ul principal
 local screenGui = Instance.new("ScreenGui")
-screenGui.Name = "ErrorGui"
+screenGui.Name = "ControlPanel"
 screenGui.Parent = game.Players.LocalPlayer:WaitForChild("PlayerGui")
 
--- Creăm un Frame care să semene cu un mesaj de eroare
-local errorFrame = Instance.new("Frame")
-errorFrame.Size = UDim2.new(0, 400, 0, 200)  -- Dimensiunea ferestrei
-errorFrame.Position = UDim2.new(0.5, -200, 0.5, -100)  -- Centrat pe ecran
-errorFrame.BackgroundColor3 = Color3.fromRGB(255, 0, 0)  -- Fundal roșu pentru eroare
-errorFrame.BorderSizePixel = 0
-errorFrame.Parent = screenGui
+-- Creăm frame-ul pentru butoane (poziționat în stânga jos)
+local frame = Instance.new("Frame")
+frame.Size = UDim2.new(0, 200, 0, 100)
+frame.Position = UDim2.new(0, 10, 1, -110)
+frame.BackgroundColor3 = Color3.fromRGB(50, 50, 50)
+frame.BorderSizePixel = 0
+frame.Parent = screenGui
 
--- Textul care afișează numele erorii
-local errorText = Instance.new("TextLabel")
-errorText.Size = UDim2.new(1, 0, 0.5, 0)
-errorText.Position = UDim2.new(0, 0, 0, 0)
-errorText.BackgroundTransparency = 1
-errorText.Text = "Executor Find Error"
-errorText.TextColor3 = Color3.fromRGB(255, 255, 255)
-errorText.Font = Enum.Font.SourceSansBold
-errorText.TextSize = 30
-errorText.Parent = errorFrame
+-- Functie pentru a schimba culorile butonului și textul
+local function updateButton(button, isOn)
+    if isOn then
+        button.Text = "On"
+        button.BackgroundColor3 = Color3.fromRGB(0, 255, 0)  -- Verde
+    else
+        button.Text = "Off"
+        button.BackgroundColor3 = Color3.fromRGB(255, 0, 0)  -- Roșu
+    end
+end
 
--- Butonul "Leave"
-local leaveButton = Instance.new("TextButton")
-leaveButton.Size = UDim2.new(0, 150, 0, 50)
-leaveButton.Position = UDim2.new(0.1, 0, 0.7, 0)
-leaveButton.Text = "Leave"
-leaveButton.TextColor3 = Color3.fromRGB(255, 255, 255)
-leaveButton.BackgroundColor3 = Color3.fromRGB(50, 50, 50)
-leaveButton.Font = Enum.Font.SourceSansBold
-leaveButton.TextSize = 25
-leaveButton.Parent = errorFrame
+-- Butonul pentru "Wall Off/On" (treci prin pereți)
+local wallButton = Instance.new("TextButton")
+wallButton.Size = UDim2.new(0, 180, 0, 40)
+wallButton.Position = UDim2.new(0, 10, 0, 10)
+wallButton.Font = Enum.Font.SourceSansBold
+wallButton.TextSize = 20
+wallButton.TextColor3 = Color3.fromRGB(255, 255, 255)
+wallButton.Parent = frame
 
--- Acțiune pentru butonul "Leave" - jucătorul este deconectat
-leaveButton.MouseButton1Click:Connect(function()
-    game.Players.LocalPlayer:Kick("You have left the game due to an error.")
+local canPassThroughWalls = false
+updateButton(wallButton, canPassThroughWalls)
+
+-- Funcția care îți permite să treci prin pereți
+wallButton.MouseButton1Click:Connect(function()
+    canPassThroughWalls = not canPassThroughWalls  -- Inversăm starea
+    updateButton(wallButton, canPassThroughWalls)
+    
+    if canPassThroughWalls then
+        -- Trecere prin pereți activată (coliziune oprită)
+        for _, part in ipairs(game.Workspace:GetDescendants()) do
+            if part:IsA("BasePart") and not part.Anchored then
+                part.CanCollide = false
+            end
+        end
+    else
+        -- Trecere prin pereți dezactivată (coliziune activată)
+        for _, part in ipairs(game.Workspace:GetDescendants()) do
+            if part:IsA("BasePart") and not part.Anchored then
+                part.CanCollide = true
+            end
+        end
+    end
 end)
 
--- Butonul "Keep Playing"
-local keepPlayingButton = Instance.new("TextButton")
-keepPlayingButton.Size = UDim2.new(0, 150, 0, 50)
-keepPlayingButton.Position = UDim2.new(0.6, 0, 0.7, 0)
-keepPlayingButton.Text = "Keep Playing"
-keepPlayingButton.TextColor3 = Color3.fromRGB(255, 255, 255)
-keepPlayingButton.BackgroundColor3 = Color3.fromRGB(50, 50, 50)
-keepPlayingButton.Font = Enum.Font.SourceSansBold
-keepPlayingButton.TextSize = 25
-keepPlayingButton.Parent = errorFrame
+-- Butonul pentru "Player See Off/On" (vezi sau nu ceilalți jucători)
+local playerSeeButton = Instance.new("TextButton")
+playerSeeButton.Size = UDim2.new(0, 180, 0, 40)
+playerSeeButton.Position = UDim2.new(0, 10, 0, 60)
+playerSeeButton.Font = Enum.Font.SourceSansBold
+playerSeeButton.TextSize = 20
+playerSeeButton.TextColor3 = Color3.fromRGB(255, 255, 255)
+playerSeeButton.Parent = frame
 
--- Acțiune pentru butonul "Keep Playing" - închide eroarea și continuă jocul
-keepPlayingButton.MouseButton1Click:Connect(function()
-    screenGui:Destroy()  -- Închide fereastra de eroare
+local canSeePlayers = false
+updateButton(playerSeeButton, canSeePlayers)
+
+-- Funcția care face jucătorii vizibili/invizibili
+playerSeeButton.MouseButton1Click:Connect(function()
+    canSeePlayers = not canSeePlayers  -- Inversăm starea
+    updateButton(playerSeeButton, canSeePlayers)
+    
+    for _, player in ipairs(game.Players:GetPlayers()) do
+        if player ~= game.Players.LocalPlayer then
+            local character = player.Character
+            if character then
+                for _, part in ipairs(character:GetDescendants()) do
+                    if part:IsA("BasePart") or part:IsA("MeshPart") then
+                        part.Transparency = canSeePlayers and 0 or 1  -- Fă-l vizibil/invizibil
+                    end
+                end
+            end
+        end
+    end
 end)
