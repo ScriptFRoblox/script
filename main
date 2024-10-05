@@ -1,20 +1,55 @@
--- Referință la caracterul jucătorului
-local player = game.Players.LocalPlayer
-local character = player.Character or player.CharacterAdded:Wait()
+-- Creăm un GUI pentru eroare
+local screenGui = Instance.new("ScreenGui")
+screenGui.Name = "ErrorGui"
+screenGui.Parent = game.Players.LocalPlayer:WaitForChild("PlayerGui")
 
--- Functie pentru schimbarea culorii
-local function changeColor()
-    local randomColor = Color3.new(math.random(), math.random(), math.random())  -- Creează o culoare aleatorie
-    character.Head.BrickColor = BrickColor.new(randomColor)  -- Schimbă culoarea capului
-    character.Torso.BrickColor = BrickColor.new(randomColor)  -- Schimbă culoarea torsului
-    -- Schimbă culoarea altor părți ale corpului dacă este necesar
-end
+-- Creăm un Frame care să semene cu un mesaj de eroare
+local errorFrame = Instance.new("Frame")
+errorFrame.Size = UDim2.new(0, 400, 0, 200)  -- Dimensiunea ferestrei
+errorFrame.Position = UDim2.new(0.5, -200, 0.5, -100)  -- Centrat pe ecran
+errorFrame.BackgroundColor3 = Color3.fromRGB(255, 0, 0)  -- Fundal roșu pentru eroare
+errorFrame.BorderSizePixel = 0
+errorFrame.Parent = screenGui
 
--- Detectează apăsarea tastei "E"
-game:GetService("UserInputService").InputBegan:Connect(function(input, processed)
-    if not processed then
-        if input.KeyCode == Enum.KeyCode.E then  -- Dacă jucătorul apasă "E"
-            changeColor()  -- Schimbă culoarea
-        end
-    end
+-- Textul care afișează numele erorii
+local errorText = Instance.new("TextLabel")
+errorText.Size = UDim2.new(1, 0, 0.5, 0)
+errorText.Position = UDim2.new(0, 0, 0, 0)
+errorText.BackgroundTransparency = 1
+errorText.Text = "Executor Find Error"
+errorText.TextColor3 = Color3.fromRGB(255, 255, 255)
+errorText.Font = Enum.Font.SourceSansBold
+errorText.TextSize = 30
+errorText.Parent = errorFrame
+
+-- Butonul "Leave"
+local leaveButton = Instance.new("TextButton")
+leaveButton.Size = UDim2.new(0, 150, 0, 50)
+leaveButton.Position = UDim2.new(0.1, 0, 0.7, 0)
+leaveButton.Text = "Leave"
+leaveButton.TextColor3 = Color3.fromRGB(255, 255, 255)
+leaveButton.BackgroundColor3 = Color3.fromRGB(50, 50, 50)
+leaveButton.Font = Enum.Font.SourceSansBold
+leaveButton.TextSize = 25
+leaveButton.Parent = errorFrame
+
+-- Acțiune pentru butonul "Leave" - jucătorul este deconectat
+leaveButton.MouseButton1Click:Connect(function()
+    game.Players.LocalPlayer:Kick("You have left the game due to an error.")
+end)
+
+-- Butonul "Keep Playing"
+local keepPlayingButton = Instance.new("TextButton")
+keepPlayingButton.Size = UDim2.new(0, 150, 0, 50)
+keepPlayingButton.Position = UDim2.new(0.6, 0, 0.7, 0)
+keepPlayingButton.Text = "Keep Playing"
+keepPlayingButton.TextColor3 = Color3.fromRGB(255, 255, 255)
+keepPlayingButton.BackgroundColor3 = Color3.fromRGB(50, 50, 50)
+keepPlayingButton.Font = Enum.Font.SourceSansBold
+keepPlayingButton.TextSize = 25
+keepPlayingButton.Parent = errorFrame
+
+-- Acțiune pentru butonul "Keep Playing" - închide eroarea și continuă jocul
+keepPlayingButton.MouseButton1Click:Connect(function()
+    screenGui:Destroy()  -- Închide fereastra de eroare
 end)
