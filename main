@@ -11,7 +11,7 @@ frame.BackgroundColor3 = Color3.fromRGB(50, 50, 50)
 frame.BorderSizePixel = 0
 frame.Parent = screenGui
 
--- Functie pentru a schimba culorile butonului și textul
+-- Funcție pentru a schimba culorile butonului și textul
 local function updateButton(button, isOn)
     if isOn then
         button.Text = "On"
@@ -68,7 +68,7 @@ playerSeeButton.Parent = frame
 local canSeePlayers = false
 updateButton(playerSeeButton, canSeePlayers)
 
--- Funcția care face jucătorii vizibili/invizibili
+-- Funcția care face jucătorii vizibili/invizibili și îi colorează roșu
 playerSeeButton.MouseButton1Click:Connect(function()
     canSeePlayers = not canSeePlayers  -- Inversăm starea
     updateButton(playerSeeButton, canSeePlayers)
@@ -80,6 +80,9 @@ playerSeeButton.MouseButton1Click:Connect(function()
                 for _, part in ipairs(character:GetDescendants()) do
                     if part:IsA("BasePart") or part:IsA("MeshPart") then
                         part.Transparency = canSeePlayers and 0 or 1  -- Fă-l vizibil/invizibil
+                        if canSeePlayers then
+                            part.Color = Color3.fromRGB(255, 0, 0)  -- Colorează roșu
+                        end
                     end
                 end
             end
