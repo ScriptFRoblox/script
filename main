@@ -1,19 +1,20 @@
-local screenGui = Instance.new("ScreenGui")
-screenGui.Name = "SmallPageGui"
-screenGui.Parent = game.Players.LocalPlayer:WaitForChild("PlayerGui")
+-- Referință la caracterul jucătorului
+local player = game.Players.LocalPlayer
+local character = player.Character or player.CharacterAdded:Wait()
 
-local frame = Instance.new("Frame")
-frame.Size = UDim2.new(0, 200, 0, 150)
-frame.Position = UDim2.new(0.5, -100, 0.5, -75)
-frame.BackgroundColor3 = Color3.fromRGB(76, 175, 80)
-frame.BorderSizePixel = 0
-frame.Parent = screenGui
+-- Functie pentru schimbarea culorii
+local function changeColor()
+    local randomColor = Color3.new(math.random(), math.random(), math.random())  -- Creează o culoare aleatorie
+    character.Head.BrickColor = BrickColor.new(randomColor)  -- Schimbă culoarea capului
+    character.Torso.BrickColor = BrickColor.new(randomColor)  -- Schimbă culoarea torsului
+    -- Schimbă culoarea altor părți ale corpului dacă este necesar
+end
 
-local textLabel = Instance.new("TextLabel")
-textLabel.Size = UDim2.new(1, 0, 1, 0)
-textLabel.BackgroundTransparency = 1
-textLabel.Text = "Pagină Mică"
-textLabel.TextColor3 = Color3.fromRGB(255, 255, 255)
-textLabel.Font = Enum.Font.SourceSans
-textLabel.TextSize = 30
-textLabel.Parent = frame
+-- Detectează apăsarea tastei "E"
+game:GetService("UserInputService").InputBegan:Connect(function(input, processed)
+    if not processed then
+        if input.KeyCode == Enum.KeyCode.E then  -- Dacă jucătorul apasă "E"
+            changeColor()  -- Schimbă culoarea
+        end
+    end
+end)
